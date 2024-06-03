@@ -2,12 +2,39 @@
 
 ### 1. FastAPI микросервис в виртуальном окружение
 
-```
-python3 -m venv ./venv
-source ...
-uvicorn ...
-```
+python3 -m venv venv
+source venv/bin/activate/
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8081 --host 0.0.0.0
 
+curl -X 'POST' \
+  'http://0.0.0.0:8081/api/predict/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "id": 802,
+  "flat_id": 0.0,
+  "building_id": 6220.0,
+  "floor": 9,
+  "is_apartment": 0,
+  "kitchen_area": 9.9,
+  "living_area": 19.9,
+  "rooms": 1,
+  "studio": 0,
+  "total_area": 35.1,
+  "build_year": 1965,
+  "building_type_int": 6,
+  "latitude": 55.717113,
+  "longitude": 37.781120,
+  "ceiling_height": 2.64,
+  "flats_count": 84,
+  "floors_total": 12,
+  "has_elevator": 1
+}
+'
 
 ### 2. FastAPI микросервис в Docker-контейнере
 ...
+
+
+NE ZABIT REQUIREMENTS FREEZE!!!!!!!!!!!!!!!!!!!!!!
