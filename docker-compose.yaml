@@ -1,0 +1,12 @@
+services:
+  flat_price_api:
+    env_file:
+      - ./.env
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - '${VM_PORT}:${APP_PORT}'
+    volumes:
+      - type: bind
+        source: ./models
+        target: /flat_price_api/models
