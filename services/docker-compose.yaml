@@ -1,0 +1,26 @@
+services:
+  flat_price_api:
+    env_file:
+      - ../.env
+    build:
+      context: ..
+      dockerfile: services/Dockerfile_ml_service
+    ports:
+      - '${VM_PORT}:${APP_PORT}'
+    volumes:
+      - type: bind
+        source: ../models
+        target: /flat_price_api/models
+    hostname: flat_predict_app
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+    volumes:
+      - type: bind
+        source: ./prometheus/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+    hostname: prometheus
