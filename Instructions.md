@@ -42,7 +42,7 @@ curl -X POST 'http://localhost:8081/api/predict/' \
 docker build -f services/Dockerfile_ml_service -t flat_predict_api:1.0 .
 
 Запуск из терминала корневой папки проекта, подключая переменные из .env:
-docker run -d -p 8081:8081 --env-file .env flat_predict_api:1.0
+docker run -d -p 8081:8081 --env-file services/.env flat_predict_api:1.0
 
 ПРИМЕЧАНИЕ: порты одинаковы так как видела в уроке в теории что в продакшене так делают
 
@@ -105,12 +105,12 @@ curl -X POST 'http://localhost:8081/api/predict/' \
 
 
 
-После запуска docker-compose сервисы находятся по следующим адресам после того как добавить в VisualStudio Code перенаправление портов 1702, 8081, 9090 через Ports в терминале:
+После запуска docker-compose сервисы находятся по следующим адресам после того как добавить в VisualStudio Code перенаправление портов 8081, 9090, 3000 через Ports в терминале:
 
 Microservice: http://localhost:8081/docs
 Prometheus metrics: http://localhost:9090/metrics
 Prometheus UI: http://localhost:9090/
-Grafana:
+Grafana: http://localhost:3000/
 
 Завершить работу докера из корневой папки проекта:
 docker compose -f services/docker-compose.yaml down

@@ -1,7 +1,7 @@
 services:
   flat_price_api:
     env_file:
-      - ../.env
+      - ./.env
     build:
       context: ..
       dockerfile: services/Dockerfile_ml_service
@@ -24,3 +24,13 @@ services:
         source: ./prometheus/prometheus.yml
         target: /etc/prometheus/prometheus.yml
     hostname: prometheus
+
+  grafana:
+    image: grafana/grafana
+    env_file:
+      - ./.env
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS}
