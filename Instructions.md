@@ -34,7 +34,19 @@ curl -X 'POST' \
 '
 
 ### 2. FastAPI микросервис в Docker-контейнере
-...
+С помощью Dockerfile:
 
+Строим образ:
+docker image build . --tag flat_predict_api:1.0
+
+Запуск:
+docker container run \
+--publish 8081:8081 \
+--volume=./models:/flat_predict_api/models \
+--env-file .env \
+flat_predict_api:1.0
+
+ПРИМЕЧАНИЕ: мне удобней локально работать у себя а не на VM
+поэтому порты не отличаются, но оставила в команде для наглядности, что если что - можно менять
 
 NE ZABIT REQUIREMENTS FREEZE!!!!!!!!!!!!!!!!!!!!!!

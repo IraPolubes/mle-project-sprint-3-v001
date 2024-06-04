@@ -1,0 +1,8 @@
+FROM python:3.11-slim
+
+LABEL author=${LABEL}
+COPY . ./flat_predict_api
+WORKDIR flat_predict_api
+RUN pip3 install -r requirements.txt
+EXPOSE ${APP_PORT}
+CMD uvicorn app.main:app --reload --port  ${APP_PORT} --host 0.0.0.0
