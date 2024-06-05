@@ -39,4 +39,4 @@ def simulate_load(number_of_requests, delay_between_requests=0):
 
 
 if __name__ == '__main__':
-    simulate_load(100,1)
+    simulate_load(20,1)

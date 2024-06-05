@@ -11,6 +11,9 @@ services:
       - type: bind
         source: ../models
         target: /flat_price_api/models
+      - type: bind
+        source: ../logs
+        target: /app/logs
     hostname: flat_predict_app
 
   prometheus:

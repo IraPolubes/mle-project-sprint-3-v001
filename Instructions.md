@@ -5,9 +5,13 @@
 
 Выполняем следующую последовательность комманд из корневой папки проекта:
 python3 -m venv venv
+
 source venv/bin/activate/
+
 pip install -r requirements.txt
+
 uvicorn app.main:app --reload --port 8081 --host 0.0.0.0
+
 
 Затем обращаемся к сервису из корневой папки проекта: 
 запускаем следующий curl в терминале и нажимаем Enter чтобы получить результат:
@@ -40,14 +44,20 @@ curl -X POST 'http://localhost:8081/api/predict/' \
 ## Запуск приложения с помощью Dockerfile:
 
 Строим образ, выполняя в терминале команду из корневой папки проекта:
+
 docker build -f services/Dockerfile_ml_service -t flat_predict_api:1.0 .
 
+
 Запуск из терминала корневой папки проекта, подключая переменные из .env:
+
 docker run -d -p 8081:8081 --env-file services/.env flat_predict_api:1.0
+
 
 ПРИМЕЧАНИЕ: порты одинаковы так как видела в уроке в теории что в продакшене так делают
 
+
 Затем для получения предсказания при запущенном контейнере запускаем следующий curl в терминале и нажимаем Enter чтобы получить результат:
+
 
 curl -X POST 'http://localhost:8081/api/predict/' \
 -H 'Content-Type: application/json' \
@@ -75,10 +85,15 @@ curl -X POST 'http://localhost:8081/api/predict/' \
 
 ## Запуск приложения, прометеуса и графаны с помощью Docker compose:
 Собираем и запускаем одной командой, выполняя в терминале команду из корневой папки проекта
-docker compose -f services/docker-compose.yaml up --build
+
+docker compose -f services/docker-compose.yaml up --build 
+
+
 
 Обращаемся к сервису с вводом чтобы получить предсказание: 
+
 запускаем следующий curl в терминале и нажимаем Enter чтобы получить результат
+
 
 
 curl -X POST 'http://localhost:8081/api/predict/' \
@@ -107,15 +122,24 @@ curl -X POST 'http://localhost:8081/api/predict/' \
 
 После запуска docker-compose сервисы находятся по следующим адресам после того как добавить в VisualStudio Code перенаправление портов 8081, 9090, 3000 через Ports в терминале:
 
+
 Microservice: http://localhost:8081/docs
+
 Prometheus metrics: http://localhost:9090/metrics
+
 Prometheus UI: http://localhost:9090/
+
 Grafana: http://localhost:3000/
 
+
 Завершить работу докера из корневой папки проекта:
+
 docker compose -f services/docker-compose.yaml down
+
 
 ## Запуск скрипта нагрузки
 В корневой папке проекта из терминала запускаем generate_requests.py
+
 Например
+
 python3 generate_requests.py

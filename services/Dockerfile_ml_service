@@ -3,6 +3,10 @@ FROM python:3.11-slim
 LABEL author=${LABEL}
 COPY . /app
 WORKDIR /app
+
+# Создание директории для логов в момент монтирования тома
+RUN mkdir -p /app/logs
+
 RUN pip3 install -r requirements.txt
 EXPOSE ${APP_PORT}
 CMD sh -c "uvicorn app.main:app --reload --port ${APP_PORT} --host 0.0.0.0"

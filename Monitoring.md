@@ -2,9 +2,13 @@
 После запуска dockr-compose сервисы находятся по следующим адресам после того как добавить в VisualStudio Code перенаправление портов 8081, 9090, 3000 через Ports в терминале:
 
 Microservice: http://localhost:8081/docs
+
 Prometheus metrics: http://localhost:9090/metrics
+
 Prometheus UI: http://localhost:9090/
+
 Grafana: http://localhost:3000/
+
 
 При запущенных сервисах можно запустить generate_requests.py и после этого обратиться к Прометеус и Графане
 за метриками.
@@ -21,4 +25,4 @@ Grafana: http://localhost:3000/
 Описания метрик даны в комментариях обработчика ./app/main.py
 
 
-## Для мониторинга выбраны метрики следующих типов:
+Скриншот дэшборда Графаны и экспортированный json файл в папке grafana_res в корневой папке проекта.
