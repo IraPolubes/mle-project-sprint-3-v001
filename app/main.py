@@ -33,8 +33,11 @@ total_requests = Counter('total_requests', 'Total number of requests')
 successful_requests = Counter('successful_requests', 'Number of successful requests') 
 
 # общие значения предсказаний
-flat_app_predictions = Histogram('flat_app_predictions', 'Prediction values', buckets=(10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000, 80000000, 90000000, 10000000, 110000000, 120000000, 130000000))  
-
+flat_app_predictions = Histogram(
+    'flat_app_predictions',
+    'Prediction values',
+    buckets=(10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000, 80000000, 90000000, 100000000, 110000000, 120000000, 130000000)
+)
 # измеритель ресурса памяти
 memory_usage_gauge = Gauge('memory_usage', 'Memory usage of the application')
 
@@ -45,9 +48,6 @@ cpu_usage_gauge = Gauge('cpu_usage', 'CPU usage of the application')
 Далее в Графане на основе этих метрик будет посчитана доля удачно обработанных запросов
 через использование PromQL
 rate(successful_requests_total[10m]) / rate(total_requests_total[10m])
-
-и гистограмма предсказаний
-histogram_quantile(0.95, sum(rate(flat_app_predictions_bucket[5m])) by (le))
 
 Остальные метрики не требуют рассчета через PromQL и будут выбраны из интерфейса Графаны в привязке
 к Прометеус.
