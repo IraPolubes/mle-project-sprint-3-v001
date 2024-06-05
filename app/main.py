@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException
 from .flat_price_handler import FlatPriceHandler
 import logging
@@ -5,7 +6,19 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import Counter, Histogram, Gauge
 import psutil
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+log_dir = "logs"
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+# Настройка логирования в файл
+log_file = os.path.join(log_dir, "app.log")
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s - %(levelname)s - %(message)s",
+                    handlers=[
+                        logging.FileHandler(log_file),
+                        logging.StreamHandler()
+                    ])
+logger = logging.getLogger(__name__)
 
 app =FastAPI()
 
@@ -40,18 +53,19 @@ def get_prediction(model_params: dict):
     try:
         prediction = app.handler.handle(model_params)
     except Exception as e:
-        logging.error(f"Problem with request: {e}")
+        logger.error(f"Problem with request: {e}")
         raise HTTPException(status_code=500, detail=f'Problem with request: {e}')
 
     if 'predicted price' not in prediction:
-        logging.error("Prediction does not contain 'predicted price'")
+        logger.error("Prediction does not contain 'predicted price'")
         raise HTTPException(status_code=500, detail='Prediction does not contain predicted price')
+
     total_requests.inc()
     if prediction['predicted price'] > 0:
-            logging.info(f"Successful prediction: {prediction['predicted price']}")
-            successful_requests.inc()
+        logger.info(f"Successful prediction: {prediction['predicted price']}")
+        successful_requests.inc()
     
-    memory_usage_gauge.set(psutil.virtual_memory().percent)  # Использование памяти
-    cpu_usage_gauge.set(psutil.cpu_percent())  # Использование CPU
+    memory_usage_gauge.set(psutil.virtual_memory().percent)
+    cpu_usage_gauge.set(psutil.cpu_percent())
 
     return prediction
