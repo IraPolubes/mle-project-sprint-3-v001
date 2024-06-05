@@ -6,4 +6,4 @@ scrape_configs:
   - job_name: 'scrapping_flat_predict_app'
     metrics_path: /metrics
     static_configs:
-      - targets: ['flat_predict_app:8081']
+      - targets: ['flat_price_api:8081']
