@@ -1,21 +1,7 @@
 import os
 from joblib import load
 import pandas as pd
-
-def remove_outliers(df, num_cols):
-    threshold = 1.5
-    df_num = df[num_cols].copy()
-    for col in num_cols:
-        Q1 = df_num[col].quantile(0.25)
-        Q3 = df_num[col].quantile(0.75)
-        IQR = Q3 - Q1
-        margin = threshold * IQR
-        lower = Q1 - margin
-        upper = Q3 + margin
-        mask = df_num[col].between(lower, upper)
-        df_num = df_num[mask]
-    return df_num
-
+from .constants import MODEL_PATH, REQUIRED_MODEL_PARAMS
 
 
 class FlatPriceHandler:
@@ -25,15 +11,11 @@ class FlatPriceHandler:
     """
     def __init__(self):
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        self.pipeline_model_path = os.path.abspath(os.path.join(base_dir, '../models/pipeline_model.joblib'))
+        self.pipeline_model_path = os.path.abspath(os.path.join(base_dir, MODEL_PATH))
         self.pipeline_model = None # инициализация
 
         # По результатам EDA нам не нужен studio, is_apartment, rooms, living_area, оставляем только те что использованы в обучении
-        self.required_model_params = [
-            'floor', 'kitchen_area', 'total_area', 'build_year',
-            'building_type_int', 'latitude', 'longitude', 'ceiling_height', 'flats_count', 'floors_total',
-            'has_elevator'
-        ]
+        self.required_model_params = REQUIRED_MODEL_PARAMS
         self.num_cols = list(set(self.required_model_params) - set(['has_elevator']))
         self.load_model()
 
@@ -41,7 +23,7 @@ class FlatPriceHandler:
         """Метод загрузки модели и пайплайна"""
         try:
             self.pipeline_model = load(self.pipeline_model_path)
-        except Exception as e:
+        except ValueError as e:
             print(f"Failed to load model: {e}")
 
     def validate_query_params(self, query_params: dict):
@@ -51,8 +33,8 @@ class FlatPriceHandler:
         if required_params <= given_params:  # required_model_params is a subset of query_params
             return True
         else:
-            print("Missing parameters: ", required_params - given_params)
-            return False
+            raise ValueError(f"Missing parameters: {required_params - given_params}")
+
 
     def keep_training_params(self, user_params):
         """
@@ -66,20 +48,32 @@ class FlatPriceHandler:
 
     def handle(self, params):
         try:
-            if not self.validate_query_params(params):
-                response = {"Error": "Parameters do not correspond to expected."}
-            else:
-                model_params_df = self.keep_training_params(params)
-                # Обработка входящих данных должна следовать пайплайну обработки тренировочных
-                model_params_df[self.num_cols] = remove_outliers(model_params_df, self.num_cols)
-                if self.pipeline_model is None:
-                   raise ValueError("Model is not loaded.")
-                price_prediction = self.pipeline_model.predict(model_params_df)
-                y_pred = price_prediction[0]
-                response = {'predicted price':y_pred}
-        except Exception as e:
-            response = {"Error": f"Problem with request: {e}"}
+            self.validate_query_params(params)
+        except ValueError as e:
+            print(f"Parameters do not correspond to expected.: {e}")
+            return {'error': str(e)}
+        
+        model_params_df = self.keep_training_params(params)
+        # Обработка входящих данных должна следовать пайплайну обработки тренировочных
+        model_params_df[self.num_cols] = self.remove_outliers(model_params_df)  
+        price_prediction = self.pipeline_model.predict(model_params_df)
+        y_pred = price_prediction[0]
+        response = {'predicted price':y_pred}
         return response
+    
+    def remove_outliers(self, df):
+        threshold = 1.5
+        df_num = df[self.num_cols].copy()
+        for col in self.num_cols:
+            Q1 = df_num[col].quantile(0.25)
+            Q3 = df_num[col].quantile(0.75)
+            IQR = Q3 - Q1
+            margin = threshold * IQR
+            lower = Q1 - margin
+            upper = Q3 + margin
+            mask = df_num[col].between(lower, upper)
+            df_num = df_num[mask]
+        return df_num
 
 
 if __name__ == '__main__':

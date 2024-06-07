@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from .flat_price_handler import FlatPriceHandler
 import logging
+import numpy as np
 from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import Counter, Histogram, Gauge
 import psutil
@@ -26,33 +27,38 @@ app.handler = FlatPriceHandler()
 
 Instrumentator().instrument(app).expose(app)
 
-# счетчик положительных предсказаний -значение больше 0 значит предсказание прошло успешно
-total_requests = Counter('total_requests', 'Total number of requests')
+class Metrics():
+    """
+    Класс метрик для обработчика.
+    Далее в Графане на основе этих метрик будет посчитана доля удачно обработанных запросов
+    через использование PromQL
+    rate(successful_requests_total[10m]) / rate(total_requests_total[10m])
 
-# счетчик предсказаний цены 
-successful_requests = Counter('successful_requests', 'Number of successful requests') 
+    Остальные метрики не требуют рассчета через PromQL и будут выбраны из интерфейса Графаны в привязке
+    к Прометеус.
+    """
+    
+    def __init__(self):
+        # счетчик положительных предсказаний -значение больше 0 значит предсказание прошло успешно
+        self.total_requests = Counter('total_requests', 'Total number of requests')
 
-# общие значения предсказаний
-flat_app_predictions = Histogram(
-    'flat_app_predictions',
-    'Prediction values',
-    buckets=(10000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000, 80000000, 90000000, 100000000, 110000000, 120000000, 130000000)
-)
-# измеритель ресурса памяти
-memory_usage_gauge = Gauge('memory_usage', 'Memory usage of the application')
+        # счетчик предсказаний цены 
+        self.successful_requests = Counter('successful_requests', 'Number of successful requests') 
 
-# измеритель ресурса cpu
-cpu_usage_gauge = Gauge('cpu_usage', 'CPU usage of the application')
+        # общие значения предсказаний
+        self.flat_app_predictions = Histogram(
+            'flat_app_predictions',
+            'Prediction values',
+            buckets = np.arange(10e6, 13e7, 10e6).astype(int)
+            )
+        # измеритель ресурса памяти
+        self.memory_usage_gauge = Gauge('memory_usage', 'Memory usage of the application')
 
-"""
-Далее в Графане на основе этих метрик будет посчитана доля удачно обработанных запросов
-через использование PromQL
-rate(successful_requests_total[10m]) / rate(total_requests_total[10m])
+        # измеритель ресурса cpu
+        self.cpu_usage_gauge = Gauge('cpu_usage', 'CPU usage of the application')
+ 
 
-Остальные метрики не требуют рассчета через PromQL и будут выбраны из интерфейса Графаны в привязке
-к Прометеус.
-
-"""
+metrics = Metrics()
 
 @app.post('/api/predict/')
 def get_prediction(model_params: dict):
@@ -66,13 +72,13 @@ def get_prediction(model_params: dict):
         logger.error("Prediction does not contain 'predicted price'")
         raise HTTPException(status_code=500, detail='Prediction does not contain predicted price')
 
-    total_requests.inc()
+    metrics.total_requests.inc()
     if prediction['predicted price'] > 0:
         logger.info(f"Successful prediction: {prediction['predicted price']}")
-        flat_app_predictions.observe(prediction['predicted price'])
-        successful_requests.inc()
+        metrics.flat_app_predictions.observe(prediction['predicted price'])
+        metrics.successful_requests.inc()
     
-    memory_usage_gauge.set(psutil.virtual_memory().percent)
-    cpu_usage_gauge.set(psutil.cpu_percent())
+    metrics.memory_usage_gauge.set(psutil.virtual_memory().percent)
+    metrics.cpu_usage_gauge.set(psutil.cpu_percent())
 
     return prediction

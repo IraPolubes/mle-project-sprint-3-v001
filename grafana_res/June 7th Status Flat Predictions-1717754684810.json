@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "cdnv43klt6874d"
+        "uid": "edo1uour5j1moe"
       },
       "fieldConfig": {
         "defaults": {
@@ -54,7 +54,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 1,
+      "id": 2,
       "options": {
         "minVizHeight": 75,
         "minVizWidth": 75,
@@ -75,11 +75,11 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "cdnv43klt6874d"
+            "uid": "edo1uour5j1moe"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "cpu_usage",
+          "expr": "memory_usage",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -89,13 +89,13 @@
           "useBackend": false
         }
       ],
-      "title": "cpu usage gauge",
+      "title": "memory usage",
       "type": "gauge"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "cdnv43klt6874d"
+        "uid": "edo1uour5j1moe"
       },
       "fieldConfig": {
         "defaults": {
@@ -125,7 +125,7 @@
         "x": 12,
         "y": 0
       },
-      "id": 2,
+      "id": 1,
       "options": {
         "minVizHeight": 75,
         "minVizWidth": 75,
@@ -146,11 +146,11 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "cdnv43klt6874d"
+            "uid": "edo1uour5j1moe"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "memory_usage",
+          "expr": "cpu_usage",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -160,18 +160,18 @@
           "useBackend": false
         }
       ],
-      "title": "memory usage gauge",
+      "title": "cpu gauge",
       "type": "gauge"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "cdnv43klt6874d"
+        "uid": "edo1uour5j1moe"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
@@ -245,7 +245,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "cdnv43klt6874d"
+            "uid": "edo1uour5j1moe"
           },
           "editorMode": "code",
           "expr": "rate(successful_requests_total[10m]) / rate(total_requests_total[10m])",
@@ -261,7 +261,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "cdnv43klt6874d"
+        "uid": "edo1uour5j1moe"
       },
       "fieldConfig": {
         "defaults": {
@@ -314,11 +314,12 @@
           "showLegend": true
         }
       },
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "cdnv43klt6874d"
+            "uid": "edo1uour5j1moe"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -348,8 +349,8 @@
   "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "browser",
-  "title": "Flat_predictions_dashboard",
-  "uid": "bdnv54hzdahhcb",
+  "title": "June 7th Status Flat Predictions",
+  "uid": "ado1v6themadcf",
   "version": 1,
   "weekStart": ""
 }
